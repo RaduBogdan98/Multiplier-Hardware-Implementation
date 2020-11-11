@@ -8,10 +8,13 @@
 
 # ignore compilation output of ModelSim
 *.mti
+*.cr.mti
 *.dat
 *.dbs
 *.psm
 *.bak
+*.vhd.bak
+*.mpf
 *.cmp
 *.jpg
 *.html

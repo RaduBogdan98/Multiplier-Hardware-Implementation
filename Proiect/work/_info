@@ -1,0 +1,195 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dD:/FACULTATE/Anul IV/TPAC/Proiect
+Eadder
+Z1 w1604915741
+Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
+Z3 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
+Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z5 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+R0
+Z6 8D:\FACULTATE\Anul IV\TPAC\Proiect\ParallelAdder.vhd
+Z7 FD:\FACULTATE\Anul IV\TPAC\Proiect\ParallelAdder.vhd
+l0
+L6
+V]4bjbMJRHnG@nR5R8lR;f1
+!s100 6]gF3XEfU_oDODS38EDn<2
+Z8 OP;C;10.4a;61
+32
+Z9 !s110 1604928919
+!i10b 1
+Z10 !s108 1604928919.000000
+Z11 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|D:\FACULTATE\Anul IV\TPAC\Proiect\ParallelAdder.vhd|
+Z12 !s107 D:\FACULTATE\Anul IV\TPAC\Proiect\ParallelAdder.vhd|
+!i113 1
+Z13 o-work work -2002 -explicit -O0
+Z14 tExplicit 1
+Abehave
+R2
+R3
+R4
+R5
+DEx4 work 5 adder 0 22 ]4bjbMJRHnG@nR5R8lR;f1
+l16
+L13
+V[4Fa0g5>gKmcTL0ADE0BJ1
+!s100 1iUI]PGleR]21lYPWKklO2
+R8
+32
+R9
+!i10b 1
+R10
+R11
+R12
+!i113 1
+R13
+R14
+Econtrolunit
+Z15 w1604928915
+R4
+R5
+R0
+Z16 8D:\FACULTATE\Anul IV\TPAC\Proiect\ControlUnit.vhd
+Z17 FD:\FACULTATE\Anul IV\TPAC\Proiect\ControlUnit.vhd
+l0
+L4
+Vg08iZAT>`9LI0V0:Vz<g30
+!s100 d=g>J?4TFaU>S<EnzX8D41
+R8
+32
+R9
+!i10b 1
+R10
+Z18 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|D:\FACULTATE\Anul IV\TPAC\Proiect\ControlUnit.vhd|
+Z19 !s107 D:\FACULTATE\Anul IV\TPAC\Proiect\ControlUnit.vhd|
+!i113 1
+R13
+R14
+Abehave
+R4
+R5
+DEx4 work 11 controlunit 0 22 g08iZAT>`9LI0V0:Vz<g30
+l11
+L9
+Vabj075kMO?N=HE^NShXYZ1
+!s100 zB1;mcJSPFZ]c6VeAh=FB1
+R8
+32
+R9
+!i10b 1
+R10
+R18
+R19
+!i113 1
+R13
+R14
+Ecounter
+Z20 w1604928887
+R4
+R5
+R0
+Z21 8D:\FACULTATE\Anul IV\TPAC\Proiect\Counter.vhd
+Z22 FD:\FACULTATE\Anul IV\TPAC\Proiect\Counter.vhd
+l0
+L4
+V]H5D=OLLHIVVge7^V6AOo0
+!s100 <0Na0hOnX7ULB]2MU2jV91
+R8
+32
+R9
+!i10b 1
+R10
+Z23 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|D:\FACULTATE\Anul IV\TPAC\Proiect\Counter.vhd|
+Z24 !s107 D:\FACULTATE\Anul IV\TPAC\Proiect\Counter.vhd|
+!i113 1
+R13
+R14
+Abehave
+R4
+R5
+DEx4 work 7 counter 0 22 ]H5D=OLLHIVVge7^V6AOo0
+l14
+L12
+V<OKXHojYnT1XRE`:cKYoC0
+!s100 ^DS:?=ZRl0ZH]ChaO^:KH0
+R8
+32
+R9
+!i10b 1
+R10
+R23
+R24
+!i113 1
+R13
+R14
+Eshiftregister
+Z25 w1604928858
+R2
+R3
+R4
+R5
+R0
+Z26 8D:\FACULTATE\Anul IV\TPAC\Proiect\ShiftRegister.vhd
+Z27 FD:\FACULTATE\Anul IV\TPAC\Proiect\ShiftRegister.vhd
+l0
+L6
+VKd:N?8^JFzk35g4EMLg[z3
+!s100 =6eNm;VRLJ9GcVKUOeL:42
+R8
+32
+R9
+!i10b 1
+R10
+Z28 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|D:\FACULTATE\Anul IV\TPAC\Proiect\ShiftRegister.vhd|
+Z29 !s107 D:\FACULTATE\Anul IV\TPAC\Proiect\ShiftRegister.vhd|
+!i113 1
+R13
+R14
+Abehave
+R2
+R3
+R4
+R5
+DEx4 work 13 shiftregister 0 22 Kd:N?8^JFzk35g4EMLg[z3
+l16
+L14
+V^n1_L3=5=gnXL2IBBI:KK1
+!s100 :Qz299KJ^n6R2TR2o63df1
+R8
+32
+R9
+!i10b 1
+R10
+R28
+R29
+!i113 1
+R13
+R14
+Esimplefsm
+w1604928987
+R4
+R5
+R0
+8D:\FACULTATE\Anul IV\TPAC\Proiect\StateMachine.vhd
+FD:\FACULTATE\Anul IV\TPAC\Proiect\StateMachine.vhd
+l0
+L7
+VO0PYRzPCFJ=g>BAoIcVEc3
+!s100 Rzi5PeUfQCLm^CQNh>?KN2
+R8
+32
+!s110 1604928994
+!i10b 1
+!s108 1604928994.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|D:\FACULTATE\Anul IV\TPAC\Proiect\StateMachine.vhd|
+!s107 D:\FACULTATE\Anul IV\TPAC\Proiect\StateMachine.vhd|
+!i113 1
+R13
+R14

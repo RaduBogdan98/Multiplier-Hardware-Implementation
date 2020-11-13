@@ -1,6 +1,3 @@
--- NOTE: Change the file extension from .txt to .vhd
-
--- include libraries
 library IEEE;
 USE ieee.std_logic_1164.all;
 
@@ -8,8 +5,8 @@ ENTITY StateMachine is
 PORT (
       clock : 	IN STD_LOGIC;
       reset : 	IN STD_LOGIC;
-      inbus :	IN STD_LOGIC_VECTOR (7 DOWNTO 0);
-      outbus :	OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+      inbus :	IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+      outbus :	OUT STD_LOGIC_VECTOR (15 DOWNTO 0));
 END ENTITY;
 
 -- Architecture definition for the SimpleFSM entity
@@ -18,7 +15,6 @@ TYPE State_type IS (INIT, TEST1, ADD, SUB, Q0, TEST_COUNT7, SHIFT, TEST2, OUTPUT
 	SIGNAL State : State_Type;    -- Create a signal that uses the different states
 	SIGNAL A,Q,M: STD_LOGIC_VECTOR(7 DOWNTO 0);
 	SIGNAL count7: STD_LOGIC;
-	SIGNAL count: INTEGER;
 	
 -- Component declarations region				    
 COMPONENT adder IS
@@ -53,8 +49,34 @@ END COMPONENT;
 -- end region
 
 BEGIN 
+-- Component instantiation
+shiftReg: shiftRegister 
+	generic map ( n => 16 )
+	port map (clock => clock,
+		intrare => shift_in,
+		iesire => shift_out);
+
+adder_entity: adder 
+	port map(clock => clock, 
+		c_in => '0',
+		x => a,
+		y => m,
+		z => a,
+		c_out => s);
+
+subtractor_entity: adder 
+	port map(clock => clock, 
+		c_in => '0',
+		x => a,
+		y => compl2,
+		z => a,
+		c_out => s);
+--end region
+
+
   PROCESS (clock, reset) 
 	VARIABLE c0,c1,c2,c3,c4,c5,c6,c7,c8,at_end: STD_LOGIC := '0';
+	VARIABLE count: INTEGER;
 
   BEGIN 
     IF (reset = '1') THEN            -- upon reset, set the state to INIT
@@ -66,12 +88,13 @@ BEGIN
 
 			WHEN INIT => 
 				at_end:='0';
-				A<=inbus;
 				s<='0';
-				count<=0;
+				count:=0;
+
+				A<=inbus(15 downto 8);
 				Q(7 downto 1)<=inbus(7 downto 1);
 				Q(0)<='0';
-				M<=inbus;
+				M<=inbus(7 downto 0);
 				State<=TEST1;
 
 			WHEN TEST1 => 
@@ -82,14 +105,8 @@ BEGIN
 				END IF; 
 
 			WHEN ADD => 
-				add: adder 
-				port map(clock => clock, 
-					c_in => '0',
-					x => a,
-					y => m,
-					z => a,
-					c_out => s);
-
+				--add				
+				
 				IF (at_end = '1') THEN
 					State <= OUTPUT;
 				ELSE
@@ -98,13 +115,7 @@ BEGIN
 
 			WHEN SUB => 
 				compl2 <= m;
-				sub: adder 
-				port map(clock => clock, 
-					c_in => '0',
-					x => a,
-					y => compl2,
-					z => a,
-					c_out => s);
+				-- sub
 				State <= Q0; 
 
 			WHEN Q0 => 
@@ -121,22 +132,14 @@ BEGIN
 				shift_in(15 downto 8)<=a;
 				shift_in(7 downto 0)<=q;
 
-				shiftReg: shiftRegister 
-				generic map ( n => 16 )
-				port map (clock => clock,
-					intrare => shift_in,
-					iesire => shift_out);
+				--shifting
 				
 				s<=shift_out(15);
 				a<=shift_out(14 downto 7);
 				q(7 downto 1)<=shift_out(6 downto 0);
 				q(0) <= '0';
-
-				counter_entity: counter 
-				port map(clock => clock, 
-					in_val => count,
-					out_val => count,
-					count7 => count7);
+				count:=count+1;
+				if(count = 7) then count7<='1'; end if;
 
 			WHEN TEST2 => 
 				IF s='1' THEN 
@@ -147,8 +150,8 @@ BEGIN
 				END IF; 
 			
 			WHEN OUTPUT => 
-				Outbus <= Q;
-				Outbus <= A;
+				Outbus(15 downto 8) <= Q;
+				Outbus(7 downto 0) <= A;
 				State <= STOP; 
 				
 			WHEN STOP =>

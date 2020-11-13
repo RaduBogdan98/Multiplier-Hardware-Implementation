@@ -44,12 +44,15 @@ COMPONENT counter IS
 		count7: OUT STD_LOGIC);
 END COMPONENT;
 
+	SIGNAL s: STD_LOGIC;
+	SIGNAL sum_out, compl2 : std_logic_vector(7 downto 0);
+	SIGNAL shift_in, shift_out : std_logic_vector(15 downto 0);
 
 BEGIN 
   PROCESS (clock, reset) 
 	VARIABLE c0,c1,c2,c3,c4,c5,c6,c7,c8,count7,at_end: STD_LOGIC := '0';
-	VARIABLE s: STD_LOGIC;
 	VARIABLE counter: INTEGER := 0;
+
 
   BEGIN 
     IF (reset = '1') THEN            -- upon reset, set the state to INIT
@@ -62,7 +65,7 @@ BEGIN
 			WHEN INIT => 
 				at_end:='0';
 				A<=inbus;
-				s:='0';
+				s<='0';
 				counter:=0;
 				Q(7 downto 1)<=inbus(7 downto 1);
 				Q(0)<='0';
@@ -70,7 +73,7 @@ BEGIN
 				State<=TEST1;
 
 			WHEN TEST1 => 
-				IF S='1' THEN 
+				IF s='1' THEN 
 					State <= ADD; 
 				ELSE
 					State <= SUB;
@@ -92,12 +95,12 @@ BEGIN
 				END IF; 
 
 			WHEN SUB => 
-				VARIABLE temp
+				compl2 <= m;
 				sub: adder 
 				port map(clock => clock, 
 					c_in => '0',
 					x => a,
-					y => (NOT(m) + "1"),
+					y => compl2,
 					z => a,
 					c_out => s);
 				State <= Q0; 
@@ -113,11 +116,18 @@ BEGIN
 				END IF; 
 
 			WHEN SHIFT => 
+				shift_in(15 downto 8)<=a;
+				shift_in(7 downto 0)<=q;
+
 				shiftReg: shiftRegister 
 				generic map ( n => 16 )
 				port map (clock => clock,
-					intrare => a & q,
-					iesire => s & a & q(7 downto 1));
+					intrare => shift_in,
+					iesire => shift_out);
+				
+				s<=shift_out(15);
+				a<=shift_out(14 downto 7);
+				q(7 downto 1)<=shift_out(6 downto 0);
 
 			WHEN TEST2 => 
 				IF s='1' THEN 

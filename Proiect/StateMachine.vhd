@@ -4,7 +4,7 @@
 library IEEE;
 USE ieee.std_logic_1164.all;
 
-ENTITY SimpleFSM is
+ENTITY StateMachine is
 PORT (
       clock : 	IN STD_LOGIC;
       reset : 	IN STD_LOGIC;
@@ -13,11 +13,14 @@ PORT (
 END ENTITY;
 
 -- Architecture definition for the SimpleFSM entity
-Architecture RTL of SimpleFSM is
+Architecture behave of StateMachine is
 TYPE State_type IS (INIT, TEST1, ADD, SUB, Q0, TEST_COUNT7, SHIFT, TEST2, OUTPUT, STOP);  -- Define the states
 	SIGNAL State : State_Type;    -- Create a signal that uses the different states
 	SIGNAL A,Q,M: STD_LOGIC_VECTOR(7 DOWNTO 0);
-							    
+	SIGNAL count7: STD_LOGIC;
+	SIGNAL count: INTEGER;
+	
+-- Component declarations region				    
 COMPONENT adder IS
 	PORT(clock, c_in: IN STD_LOGIC;
 		x,y: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
@@ -47,12 +50,11 @@ END COMPONENT;
 	SIGNAL s: STD_LOGIC;
 	SIGNAL sum_out, compl2 : std_logic_vector(7 downto 0);
 	SIGNAL shift_in, shift_out : std_logic_vector(15 downto 0);
+-- end region
 
 BEGIN 
   PROCESS (clock, reset) 
-	VARIABLE c0,c1,c2,c3,c4,c5,c6,c7,c8,count7,at_end: STD_LOGIC := '0';
-	VARIABLE counter: INTEGER := 0;
-
+	VARIABLE c0,c1,c2,c3,c4,c5,c6,c7,c8,at_end: STD_LOGIC := '0';
 
   BEGIN 
     IF (reset = '1') THEN            -- upon reset, set the state to INIT
@@ -66,7 +68,7 @@ BEGIN
 				at_end:='0';
 				A<=inbus;
 				s<='0';
-				counter:=0;
+				count<=0;
 				Q(7 downto 1)<=inbus(7 downto 1);
 				Q(0)<='0';
 				M<=inbus;
@@ -106,7 +108,7 @@ BEGIN
 				State <= Q0; 
 
 			WHEN Q0 => 
-				Q(0) <= NOT s; 
+				Q(0) <= NOT(s); 
 
 			WHEN TEST_COUNT7 => 
 				IF count7='1' THEN 
@@ -128,6 +130,13 @@ BEGIN
 				s<=shift_out(15);
 				a<=shift_out(14 downto 7);
 				q(7 downto 1)<=shift_out(6 downto 0);
+				q(0) <= '0';
+
+				counter_entity: counter 
+				port map(clock => clock, 
+					in_val => count,
+					out_val => count,
+					count7 => count7);
 
 			WHEN TEST2 => 
 				IF s='1' THEN 
@@ -142,9 +151,7 @@ BEGIN
 				Outbus <= A;
 				State <= STOP; 
 				
-
-			WHEN STOP => 
-				 
+			WHEN STOP =>
 
 			WHEN others =>
 				State <= INIT;
@@ -152,8 +159,4 @@ BEGIN
     END IF; 
   END PROCESS;
   
-  -- Decode the current state to create the output
-  -- if the current state is D, R is 1 otherwise R is 0
-  --R <= '1' WHEN State=D ELSE '0';
-  
-END rtl;
+END behave;

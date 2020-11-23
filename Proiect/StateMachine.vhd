@@ -1,36 +1,35 @@
 library IEEE;
 USE ieee.std_logic_1164.all;
 
-ENTITY StateMachine is
+ENTITY ControlUnit is
 PORT (
       --clock : 	IN STD_LOGIC;
       --reset : 	IN STD_LOGIC;
-      inbus :	IN STD_LOGIC_VECTOR (15 DOWNTO 0):=x"97A7";
-      outbus :	OUT STD_LOGIC_VECTOR (15 DOWNTO 0));
+      INBUS :	IN STD_LOGIC_VECTOR (15 DOWNTO 0):=x"97A7";
+      OUTBUS :	OUT STD_LOGIC_VECTOR (15 DOWNTO 0));
 END ENTITY;
 
 -- Architecture definition for the SimpleFSM entity
-Architecture behave of StateMachine is
-TYPE State_type IS (INIT, TEST1, ADD, TEST_COUNT7, RSHIFT, TEST2, CORRECTION, OUTPUT, STOP);  -- Define the states
+Architecture behave of ControlUnit is
+TYPE State_type IS (INIT, TEST1, ADD, INCREMENT, TEST_COUNT7, RSHIFT, TEST2, CORRECTION, OUTPUT, STOP);  -- Define the states
 	SIGNAL State : State_Type;    -- Create a signal that uses the different states
 
 -- Mandatory signals
-	SIGNAL A,Q,M: STD_LOGIC_VECTOR(7 DOWNTO 0);
+	SIGNAL A,Q,M: STD_LOGIC_VECTOR(7 DOWNTO 0):=x"00";
 	SIGNAL f,count7,c0,c1,c2,c3,c4,c5,c6,end_sgn: STD_LOGIC := '0';
-	SIGNAL count: INTEGER;
+	SIGNAL count: INTEGER:=0;
+	SIGNAL clock, reset :  STD_LOGIC:='1';
 
 -- Non-standard signals
 	SIGNAL A_S : std_logic_vector(7 downto 0);
 	SIGNAL shift_in, shift_out : std_logic_vector(15 downto 0);
-	SIGNAL clock, reset :  STD_LOGIC:='1';
-	SIGNAL shift_reset, c_out : STD_LOGIC:='0'; 
+	SIGNAL shift_reset, shift_load : STD_LOGIC:='0'; 
 	
 -- Component declarations region				    
 COMPONENT adder IS
-	PORT(c_in, load: IN STD_LOGIC;
+	PORT(op, enable: IN STD_LOGIC;
 		x,y: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-		z: OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		c_out: OUT STD_LOGIC);
+		z: OUT STD_LOGIC_VECTOR(7 DOWNTO 0));
 END COMPONENT;
 
 COMPONENT shiftRegister IS
@@ -43,26 +42,26 @@ END COMPONENT;
 
 BEGIN 
 reset<='1', '0' after 30 ns;
+shift_reset<='0', '1' after 30 ns;
 clock<=Not clock after 50 ns;
 
 -- Component instantiation
-shiftReg: shiftRegister 
+shiftReg: ShiftRegister 
 	generic map ( n => 16 )
 	port map (clock => clock,
 		reset => shift_reset,
-		load => c5,
-		shift => c6,
-		intr => '1',
+		load => shift_load,
+		shift => c3,
+		intr => f,
 		intrare => shift_in,
 		iesire => shift_out);
 
-adder_entity: adder 
-	port map( c_in => c4,
-		load => c2,
+adder_entity: Adder 
+	port map( op => c4,
+		enable => c2,
 		x => a,
 		y => m,
-		z => a_s,
-		c_out => c_out);
+		z => a_s);
 --end region
 
 
@@ -72,8 +71,9 @@ adder_entity: adder
   BEGIN 
     IF (reset = '1') THEN            -- upon reset, set the state to INIT
     	State <= INIT;
+	outbus <= x"0000";
  
-    ELSIF rising_edge(clock) THEN   
+    ELSIF clock='1' AND clock'EVENT AND clock'LAST_VALUE='0' THEN   
 
 		CASE State IS
 
@@ -85,7 +85,7 @@ adder_entity: adder
 				
 				f<= '0';
 				A<= x"00";
-				count<=1;
+				count<=0;
 				M<=inbus(15 downto 8);
 				Q<=inbus(7 downto 0);
 				
@@ -94,38 +94,45 @@ adder_entity: adder
 			WHEN TEST1 => 
 				c0<='0';
 				c1<='0';
-				c3<='0';
 
 				IF q(0)='1' THEN 
 					c2<='1';
 					State <= ADD; 
 				ELSE
+					shift_load<='1';
+					c3<='1';
 					State <= RSHIFT;
 				END IF; 
 
 			WHEN ADD => 
+				shift_load<='1';
+				c3<='1';
+
 				a<=a_s;
 				f<=f or (m(7) AND q(0));
+
 				State <= RSHIFT;
 
 			WHEN RSHIFT => 
 				c2<='0';	
-				c3<='1';		
+				
+				shift_in(15 downto 8)<=a;
+				shift_in(7 downto 0)<=q;
+				shift_load<='0' after 150 ns;
+				c3<='0' after 250 ns;
 
-				aux:=a(0);
-				a(6 downto 0)<=a(7 downto 1);
-				a(7)<=f;
-				q(6 downto 0)<=q(7 downto 1);
-				q(7)<=aux;
+				State<= INCREMENT after 300 ns;
+
+			WHEN INCREMENT => 
+				a<=shift_out(15 downto 8);
+				q<=shift_out(7 downto 0);
 
 				count<=count+1;
-				if(count = 7) then count7<='1'; end if;
+				if(count = 6) then count7<='1'; end if;
 
 				State<= TEST_COUNT7;
 
 			WHEN TEST_COUNT7 => 
-				c3<='0';
-
 				IF count7='0' THEN 
 					State <= TEST1; 
 				ELSE 
